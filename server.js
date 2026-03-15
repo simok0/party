@@ -578,3 +578,29 @@ server.listen(PORT, () => {
     debugRooms: `http://localhost:${PORT}/debug/rooms`,
   });
 });
+
+if (type === "ping") {
+  const clientTs = typeof msg.timestamp === "number" ? msg.timestamp : null;
+  const serverTs = Date.now();
+
+  try {
+    ws.send(
+      JSON.stringify({
+        type: "pong",
+        ts: serverTs,
+        echoTimestamp: clientTs,
+      }),
+    );
+    console.log(
+      `[Server] Pong sent to room=${ws.meta?.roomId} connId=${ws.meta?.connId}`,
+      {
+        clientTs,
+        serverTs,
+      },
+    );
+  } catch (error) {
+    console.error("[Server] Failed to send pong", error);
+  }
+
+  return;
+}
